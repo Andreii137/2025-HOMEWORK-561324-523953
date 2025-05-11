@@ -1,8 +1,7 @@
 package it.uniroma3.diadia; 
-import java.util.Scanner;
 
-import it.uniroma3.diadia.ambienti.Stanza;
-import it.uniroma3.diadia.attrezzi.Attrezzo;
+import it.uniroma3.diadia.comandi.Comando;
+import it.uniroma3.diadia.comandi.FabbricaDiComandiFisarmonica;
 
 /**
  * Classe principale di diadia, un semplice gioco di ruolo ambientato al dia.
@@ -16,7 +15,7 @@ import it.uniroma3.diadia.attrezzi.Attrezzo;
  * @version base
  */
 
-public class DiaDia {
+public class DiaDia{
 
 	static final private String MESSAGGIO_BENVENUTO = ""+
 			"Ti trovi nell'Universita', ma oggi e' diversa dal solito...\n" +
@@ -28,14 +27,12 @@ public class DiaDia {
 			"o regalarli se pensi che possano ingraziarti qualcuno.\n\n"+
 			"Per conoscere le istruzioni usa il comando 'aiuto'.";
 
-	static final private String[] elencoComandi = {"vai", "aiuto", "fine", "posa", "prendi"};
-
 	private Partita partita;
-	private IOConsole io;
+	private IO io;
 
-	public DiaDia() {
+	public DiaDia(IO console) {
 		this.partita = new Partita();
-		this.io=new IOConsole();
+		this.io= console;
 	}
 
 	public void gioca() {
@@ -53,35 +50,24 @@ public class DiaDia {
 	 * @return true se l'istruzione e' eseguita e il gioco continua, false altrimenti
 	 */
 	private boolean processaIstruzione(String istruzione) {
-		Comando comandoDaEseguire = new Comando(istruzione);
-		if(comandoDaEseguire.getNome()==null) return false;
+		Comando comandoDaEseguire;
+		FabbricaDiComandiFisarmonica factory = new FabbricaDiComandiFisarmonica();
+		comandoDaEseguire = factory.costruisciComando(istruzione);
+		comandoDaEseguire.esegui(this.partita);
+		if (this.partita.vinta())
 
-		if (comandoDaEseguire.getNome().equals("fine")) {
-			this.fine(); 
-			return true;
-		} else if (comandoDaEseguire.getNome().equals("vai"))
-			this.vai(comandoDaEseguire.getParametro());
-		else if (comandoDaEseguire.getNome().equals("aiuto"))
-			this.aiuto();
-		else if (comandoDaEseguire.getNome().equals("posa"))
-			this.posa(comandoDaEseguire.getParametro());
-		else if (comandoDaEseguire.getNome().equals("prendi"))
-			this.prendi(comandoDaEseguire.getParametro());
-		else
-			io.mostraMessaggio("Comando sconosciuto");
-		if(this.partita.isFinita()) {
-			if (this.partita.vinta()) {
-				io.mostraMessaggio("Hai vinto!");
-			}
-			return true;
-		}
-		return false;
+		System.out.println("Hai vinto!");
+		if (!this.partita.giocatoreIsVivo())
+
+		System.out.println("Hai esaurito i CFU...");
+
+		return this.partita.isFinita();
 	}
 	// implementazioni dei comandi dell'utente:
 
 	/**
 	 * Stampa informazioni di aiuto.
-	 */
+	 
 	private void aiuto() {
 		for(int i=0; i< elencoComandi.length; i++) 
 			io.mostraMessaggio(elencoComandi[i]+" ");
@@ -91,7 +77,7 @@ public class DiaDia {
 	/**
 	 * Cerca di andare in una direzione. Se c'e' una stanza ci entra 
 	 * e ne stampa il nome, altrimenti stampa un messaggio di errore
-	 */
+	 
 	private void vai(String direzione) {
 		if(direzione==null)
 			io.mostraMessaggio("Dove vuoi andare ?");
@@ -143,14 +129,14 @@ public class DiaDia {
 
 	/**
 	 * Comando "Fine".
-	 */
+	 
 	private void fine() {
 		io.mostraMessaggio("Grazie di aver giocato!");  // si desidera smettere
 	}
-
+*/
 	public static void main(String[] argc) {
-		IOConsole io=new IOConsole();
-		DiaDia gioco = new DiaDia();
+		IO io=new IOConsole();
+		DiaDia gioco = new DiaDia(io);
 		gioco.gioca();
 	}
 }

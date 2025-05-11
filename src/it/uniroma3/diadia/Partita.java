@@ -64,6 +64,10 @@ public class Partita {
 	 * Imposta la partita come finita
 	 *
 	 */
+	public boolean giocatoreIsVivo() {
+		return this.giocatore.getCfu()>0;
+	}
+	
 	public void setFinita() {
 		this.finita = true;
 	}
